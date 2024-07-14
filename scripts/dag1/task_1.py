@@ -16,10 +16,12 @@ with open(f'/airflow/scripts/dag1/city_coord.yaml') as file:
 location = {'q': '59.1311, 37.8822'}  # запрашиваем температуру в Череповце для получения актуального времени
 response = requests.get(url, headers=headers, params=location)
 wthr = response.json()
-loc_time_f = wthr.get('current').get('last_updated') # Получаем дату выгрузки от API
+loc_time_f = wthr.get('current').get('last_updated')  # Получаем дату выгрузки от API
 # Меняем формат для представления даты в формате ГГГГ-ММ-ДД_ЧЧ-ММ
 loc_time_formatted = datetime.strptime(loc_time_f, '%Y-%m-%d %H:%M').strftime('%Y-%m-%d_%H-%M')
-filename = f'weather_data_{loc_time_formatted}.csv' # Формируем название файлов
+# Меняем формат для представления даты в формате ГГГГ-ММ-ДДЧЧ-ММ для загрузки в файл
+loc_time_in_file = datetime.strptime(loc_time_f, '%Y-%m-%d %H:%M').strftime('%Y.%m.%d %H:%M')
+filename = f'weather_data_{loc_time_formatted}.csv'  # Формируем название файлов
 
 file_path = f'/airflow/source/{filename}'
 if os.path.exists(file_path):
@@ -27,7 +29,7 @@ if os.path.exists(file_path):
 
 with open(file_path, mode='a', newline='', encoding='cp1251') as file:
     writer = csv.writer(file, delimiter=';')
-    writer.writerow(['Date&Time', 'Country', 'Region', 'City', 'Temperature'])  # добавляем строку с заголовками
+    writer.writerow(['Time', 'Country', 'Region', 'City', 'Temperature'])  # добавляем строку с заголовками
 
     for city, coord in cities_data.items():
         location = {'q': coord}  # для каждой координаты запрашиваем температуру
@@ -36,13 +38,14 @@ with open(file_path, mode='a', newline='', encoding='cp1251') as file:
         country = wthr.get('location').get('country')
         region = wthr.get('location').get('region')
         city_name = wthr.get('location').get('name')
-        loc_time = wthr.get('current').get('last_updated')
+        loc_time = loc_time_in_file
+        #        loc_time = wthr.get('current').get('last_updated')
         temp_C = int(wthr.get('current').get('temp_c'))
 
         writer.writerow([loc_time, country, region, city_name, temp_C])  # Записываем данные в файл CSV
 
         print(
-            f'Country: {country}, Region: {region}, City: {city_name}, Date&time: {loc_time}, Temp: {temp_C}')
+            f'Country: {country}, Region: {region}, City: {city_name}, Date_time: {loc_time}, Temp: {temp_C}')
         # Выводим на печать, что бы посмотреть, что записали в файл
 
     print(f'Данные успешно сохранены в файл {filename}')
