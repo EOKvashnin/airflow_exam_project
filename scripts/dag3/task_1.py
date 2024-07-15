@@ -4,19 +4,12 @@ import yaml
 import os
 from datetime import datetime
 from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base
 from sqlalchemy import Column, Integer, VARCHAR, create_engine, TIMESTAMP
 from sqlalchemy.orm import sessionmaker
 import csv
 from datetime import datetime
-
-url = "https://weatherapi-com.p.rapidapi.com/current.json"
-
-headers = {"X-RapidAPI-Key": "ab46426aaamshab7cba2a1dc9d3bp1a34bbjsn236959a6cdb8",
-           "X-RapidAPI-Host": "weatherapi-com.p.rapidapi.com"}
-
-Base = declarative_base()
-SQLALCHEMY_DATABASE_URI = f'postgresql://djeff07:Malina1905@194.87.147.124:5432/test_1'
+from config import url, headers, SQLALCHEMY_DATABASE_URI
+from base import Base
 
 class Weather_from_dag(Base):
     __tablename__ = 'api_wthr_to_db'
