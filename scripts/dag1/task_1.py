@@ -39,7 +39,6 @@ with open(file_path, mode='a', newline='', encoding='cp1251') as file:
         region = wthr.get('location').get('region')
         city_name = wthr.get('location').get('name')
         loc_time = loc_time_in_file
-        #        loc_time = wthr.get('current').get('last_updated')
         temp_C = int(wthr.get('current').get('temp_c'))
 
         writer.writerow([loc_time, country, region, city_name, temp_C])  # Записываем данные в файл CSV

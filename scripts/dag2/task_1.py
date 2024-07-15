@@ -3,7 +3,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy import Column, Integer, VARCHAR, create_engine, TIMESTAMP
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import Sequence
 import csv
 from datetime import datetime
 
@@ -26,20 +25,14 @@ Base.metadata.create_all(bind=engine)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 session_local = SessionLocal()
 
-# Проверяем, есть ли записи в таблице
-if session_local.query(Weather_from_dag).count() > 0:
-    # Удаляем все существующие записи
-    session_local.query(Weather_from_dag).delete()
-
 # Открытие CSV файла и чтение его содержимого
-#with open('/airflow/source/union_csv/sort_combined.csv', 'r') as file:
-with open('sort_combined.csv', 'r') as file:
+with open('/airflow/source/union_csv/sort_combined.csv', 'r', encoding='cp1251') as file:
     reader = csv.DictReader(file, delimiter=';')
-    print(reader)
+
     for row in reader:
         new_record = Weather_from_dag(
-            Time=datetime.strptime(row['Time'], "%d.%m.%Y %H:%M").strftime("%Y-%m-%d %H:%M:%S"),
-            Country = row['Country'],
+            Time=datetime.strptime(row['Time'], "%Y.%m.%d %H:%M").strftime("%Y-%m-%d %H:%M:%S"),
+            Country=row['Country'],
             Region=row['Region'],
             City=row['City'],
             Temperature=int(row['Temperature'])
