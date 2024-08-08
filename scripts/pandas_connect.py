@@ -15,6 +15,7 @@ df = pd.read_sql(query, engine)
 
 # Вывод первых нескольких строк DataFrame
 print(df.head(15))
+print ('Все получилось')
 
 
 
