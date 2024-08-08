@@ -73,10 +73,36 @@ with open(file_path, mode='a', newline='', encoding='cp1251') as file:
         response = requests.get(url, headers=headers, params=location)
         wthr = response.json()
         country = 'Россия'
-        region = wthr.get('location').get('region')
-        city_name = wthr.get('location').get('name')
+        if 'location' in wthr:
+            location_data = wthr.get('location')
+
+            if location_data is not None and 'region' in location_data:
+                region = location_data.get('region')
+            else:
+                region = None
+        else:
+            region = None
+        if 'location' in wthr:
+            location_data = wthr.get('location')
+
+            if location_data is not None and 'name' in location_data:
+                city_name = location_data.get('name')
+            else:
+                city_name = None
+        else:
+            city_name = None
+
         loc_time = loc_time_in_file
-        temp_C = int(wthr.get('current').get('temp_c'))
+
+        if 'current' in wthr:
+            location_data = wthr.get('current')
+
+            if location_data is not None and 'name' in location_data:
+                temp_C = location_data.get('temp_c')
+            else:
+                temp_C = "None"
+        else:
+            temp_C = "None"
 
         writer.writerow([loc_time, country, region, city_name, temp_C])  # Записываем данные в файл CSV
 
